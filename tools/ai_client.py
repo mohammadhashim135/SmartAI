@@ -1,10 +1,17 @@
 from groq import Groq
 import os
+import streamlit as st
 from dotenv import load_dotenv
 
 load_dotenv()
 
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+api_key = os.getenv("GROQ_API_KEY")
+
+if not api_key:
+    api_key = st.secrets["GROQ_API_KEY"]
+
+client = Groq(api_key=api_key)
+
 
 def call_ai(prompt, system=""):
 
@@ -13,7 +20,8 @@ def call_ai(prompt, system=""):
         messages=[
             {"role": "system", "content": system},
             {"role": "user", "content": prompt}
-        ]
+        ],
+        temperature=0.2
     )
 
     return response.choices[0].message.content
